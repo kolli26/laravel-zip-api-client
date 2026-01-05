@@ -6,12 +6,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('counties.index');
 });
 
 Route::get('/dashboard', function () {
+    $controller = new \App\Http\Controllers\Controller();
+    if (!$controller->isAuthenticated()) {
+        return redirect()->route('login');
+    }
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->name('dashboard');
 
 // County routes
 Route::get('/counties', [CountyController::class, 'index'])->name('counties.index');
@@ -34,11 +38,5 @@ Route::put('/cities/{id}', [CityController::class, 'update'])->name('cities.upda
 Route::delete('/cities/{id}', [CityController::class, 'destroy'])->name('cities.destroy');
 Route::get('/cities/export/csv', [CityController::class, 'exportCsv'])->name('cities.export.csv');
 Route::get('/cities/export/pdf', [CityController::class, 'exportPdf'])->name('cities.export.pdf');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
 require __DIR__.'/auth.php';

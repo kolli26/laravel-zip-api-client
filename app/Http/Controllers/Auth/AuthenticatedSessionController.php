@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         // Bejelentkezünk az API-ba
-        $response = Http::api()->post('/user/login', [
+        $response = Http::api()->post('/users/login', [
             'email' => $request->email,
             'password' => $request->password,
         ]);
