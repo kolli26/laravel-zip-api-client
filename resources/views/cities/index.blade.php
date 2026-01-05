@@ -96,9 +96,9 @@
                             @foreach($cities as $city)
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->place_name ?? $city->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ (is_object($city->county) && isset($city->county->name)) ? $city->county->name : '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->zip_code ?? $city->postal_code }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->place_name->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->place_name->county->name ?? '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->code }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a href="{{ route('cities.show', $city->id) }}" class="text-blue-600 hover:text-blue-900">{{ __('Megtekintés') }}</a>
                                     @if($isAuthenticated)
