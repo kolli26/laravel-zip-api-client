@@ -277,14 +277,17 @@ class CityController extends Controller
 
             $callback = function() use ($cities) {
                 $file = fopen('php://output', 'w');
+                // Write UTF-8 BOM for proper character encoding in Excel
+                fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+                
                 fputcsv($file, ['ID', 'Város', 'Megye', 'Irányítószám'], ';');
                 
                 foreach ($cities as $city) {
                     fputcsv($file, [
                         $city->id, 
-                        (is_object($city->place_name) && isset($city->place_name->name)) ? $city->place_name->name : $city->place_name, 
-                        (is_object($city->place_name) && isset($city->place_name->county->name)) ? $city->place_name->county->name : '', 
-                        $city->zip_code
+                        $city->place_name->name ?? '', 
+                        $city->place_name->county->name ?? '-', 
+                        $city->code ?? ''
                     ], ';');
                 }
 
