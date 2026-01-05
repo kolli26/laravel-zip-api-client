@@ -15,6 +15,12 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('counties.index')" :active="request()->routeIs('counties.*')">
+                        {{ __('Megyék') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('cities.index')" :active="request()->routeIs('cities.*')">
+                        {{ __('Városok') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -69,6 +75,12 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('counties.index')" :active="request()->routeIs('counties.*')">
+                {{ __('Megyék') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('cities.index')" :active="request()->routeIs('cities.*')">
+                {{ __('Városok') }}
             </x-responsive-nav-link>
         </div>
 
