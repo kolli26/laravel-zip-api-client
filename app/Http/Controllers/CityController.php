@@ -282,9 +282,9 @@ class CityController extends Controller
                 foreach ($cities as $city) {
                     fputcsv($file, [
                         $city->id, 
-                        $city->place_name ?? $city->name, 
-                        $city->county->name ?? '', 
-                        $city->zip_code ?? $city->postal_code
+                        (is_object($city->place_name) && isset($city->place_name->name)) ? $city->place_name->name : $city->place_name, 
+                        (is_object($city->place_name) && isset($city->place_name->county->name)) ? $city->place_name->county->name : '', 
+                        $city->zip_code
                     ], ';');
                 }
 
@@ -315,6 +315,11 @@ class CityController extends Controller
             $cities = $this->getCities($response);
 
             $pdf = Pdf::loadView('cities.pdf', ['entities' => $cities])
+                ->setPaper('a4')
+                ->setOption('margin-top', 20)
+                ->setOption('margin-bottom', 20);
+
+            return $pdf->download('cities_' . now()->format('Y_m_d_H_i_s') . '.pdf')
                 ->setPaper('a4')
                 ->setOption('margin-top', 20)
                 ->setOption('margin-bottom', 20);
