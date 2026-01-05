@@ -33,6 +33,11 @@ class CityController extends Controller
                     $letters = $responseBody->data ?? [];
                 }
 
+                // Default to 'all' if no letter is specified
+                if (!$letter) {
+                    $letter = 'all';
+                }
+
                 // Fetch zip codes for the county
                 if ($letter === 'all') {
                     // Fetch all zip codes for the county
@@ -105,7 +110,7 @@ class CityController extends Controller
             $counties = [];
             if ($response->successful()) {
                 $responseBody = json_decode($response->body(), false);
-                $counties = $responseBody->data->counties ?? [];
+                $counties = $responseBody->data ?? [];
             }
 
             return view('cities.create', ['counties' => $counties]);
@@ -129,7 +134,7 @@ class CityController extends Controller
             $counties = [];
             if ($countiesResponse->successful()) {
                 $responseBody = json_decode($countiesResponse->body(), false);
-                $counties = $responseBody->data->counties ?? [];
+                $counties = $responseBody->data ?? [];
             }
             
             $countyName = '';
@@ -218,7 +223,7 @@ class CityController extends Controller
             $counties = [];
             if ($countiesResponse->successful()) {
                 $responseBody = json_decode($countiesResponse->body(), false);
-                $counties = $responseBody->data->counties ?? [];
+                $counties = $responseBody->data ?? [];
             }
             
             $countyName = '';
