@@ -69,7 +69,14 @@ class CountyController extends Controller
         if (!$this->isAuthenticated()) {
             return redirect()->route('login')->with('error', 'Bejelentkezés szükséges.');
         }
-        return view('counties.create');
+        
+        try {
+            return view('counties.create');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('counties.index')
+                ->with('error', "Hiba a megye létrehozás során: " . $e->getMessage());
+        }
     }
 
     public function store(CountyRequest $request)

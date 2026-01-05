@@ -68,10 +68,10 @@
             @if($isAuthenticated && $selectedCounty)
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <a href="{{ route('cities.export.csv', ['county_id' => $selectedCounty]) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
+                    <a href="{{ route('cities.export.csv', ['county_id' => $selectedCounty, 'letter' => $selectedLetter]) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
                         {{ __('CSV export') }}
                     </a>
-                    <a href="{{ route('cities.export.pdf', ['county_id' => $selectedCounty]) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    <a href="{{ route('cities.export.pdf', ['county_id' => $selectedCounty, 'letter' => $selectedLetter]) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         {{ __('PDF export') }}
                     </a>
                 </div>

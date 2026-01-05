@@ -124,10 +124,26 @@ class CityController extends Controller
         }
 
         try {
+            // Get county name from counties list
+            $countiesResponse = Http::api()->get('counties');
+            $counties = [];
+            if ($countiesResponse->successful()) {
+                $responseBody = json_decode($countiesResponse->body(), false);
+                $counties = $responseBody->data->counties ?? [];
+            }
+            
+            $countyName = '';
+            foreach ($counties as $county) {
+                if ($county->id == $request->get('county_id')) {
+                    $countyName = $county->name;
+                    break;
+                }
+            }
+            
             $response = Http::api()
                 ->withToken($this->token)
                 ->post('/zip-codes', [
-                    'county_id' => $request->get('county_id'),
+                    'county' => $countyName,
                     'place_name' => $request->get('name'),
                     'zip_code' => $request->get('postal_code'),
                 ]);
@@ -197,10 +213,26 @@ class CityController extends Controller
         }
 
         try {
+            // Get county name from counties list
+            $countiesResponse = Http::api()->get('counties');
+            $counties = [];
+            if ($countiesResponse->successful()) {
+                $responseBody = json_decode($countiesResponse->body(), false);
+                $counties = $responseBody->data->counties ?? [];
+            }
+            
+            $countyName = '';
+            foreach ($counties as $county) {
+                if ($county->id == $request->get('county_id')) {
+                    $countyName = $county->name;
+                    break;
+                }
+            }
+            
             $response = Http::api()
                 ->withToken($this->token)
                 ->put("/zip-codes/$id", [
-                    'county_id' => $request->get('county_id'),
+                    'county' => $countyName,
                     'place_name' => $request->get('name'),
                     'zip_code' => $request->get('postal_code'),
                 ]);
@@ -256,11 +288,19 @@ class CityController extends Controller
     {
         try {
             $countyId = $request->get('county_id');
+            $letter = $request->get('letter');
+            
             if (!$countyId) {
                 return redirect()->route('cities.index')->with('error', 'Válassz egy megyét az exportáláshoz.');
             }
 
-            $response = Http::api()->get("zip-codes?county_id=$countyId");
+            // Build API URL with optional letter filter
+            $url = "zip-codes?county_id=$countyId";
+            if ($letter && $letter !== 'all') {
+                $url .= "&letter=" . urlencode($letter);
+            }
+            
+            $response = Http::api()->get($url);
 
             if ($response->failed()) {
                 return redirect()->route('cities.index')->with('error', 'Nem sikerült letölteni az adatokat.');
@@ -305,11 +345,19 @@ class CityController extends Controller
     {
         try {
             $countyId = $request->get('county_id');
+            $letter = $request->get('letter');
+            
             if (!$countyId) {
                 return redirect()->route('cities.index')->with('error', 'Válassz egy megyét az exportáláshoz.');
             }
 
-            $response = Http::api()->get("zip-codes?county_id=$countyId");
+            // Build API URL with optional letter filter
+            $url = "zip-codes?county_id=$countyId";
+            if ($letter && $letter !== 'all') {
+                $url .= "&letter=" . urlencode($letter);
+            }
+            
+            $response = Http::api()->get($url);
 
             if ($response->failed()) {
                 return redirect()->route('cities.index')->with('error', 'Nem sikerült letölteni az adatokat.');
@@ -318,11 +366,6 @@ class CityController extends Controller
             $cities = $this->getCities($response);
 
             $pdf = Pdf::loadView('cities.pdf', ['entities' => $cities])
-                ->setPaper('a4')
-                ->setOption('margin-top', 20)
-                ->setOption('margin-bottom', 20);
-
-            return $pdf->download('cities_' . now()->format('Y_m_d_H_i_s') . '.pdf')
                 ->setPaper('a4')
                 ->setOption('margin-top', 20)
                 ->setOption('margin-bottom', 20);

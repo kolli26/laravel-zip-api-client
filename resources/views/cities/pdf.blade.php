@@ -43,6 +43,9 @@
             border-top: 1px solid #ddd;
             padding-top: 20px;
         }
+        @page {
+            margin: 100px 50px;
+        }
     </style>
 </head>
 <body>
@@ -64,16 +67,16 @@
             @foreach($entities as $city)
             <tr>
                 <td>{{ $city->id }}</td>
-                <td>{{ $city->place_name ?? $city->name }}</td>
-                <td>{{ $city->county->name ?? '-' }}</td>
-                <td>{{ $city->zip_code ?? $city->postal_code }}</td>
+                <td>{{ $city->place_name->name }}</td>
+                <td>{{ $city->place_name->county->name ?? '-' }}</td>
+                <td>{{ $city->code }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
     <div class="footer">
-        <p>&copy; {{ date('Y') }} - Wszystkie prawa zastrzeżone. | Strona <span class="page-number"></span> z <span class="page-count"></span></p>
+        <p>&copy; {{ date('Y') }} - Minden jog fenntartva.</p>
     </div>
 </body>
 </html>
