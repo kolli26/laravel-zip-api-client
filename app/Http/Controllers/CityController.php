@@ -33,19 +33,18 @@ class CityController extends Controller
                     $letters = $responseBody->data ?? [];
                 }
 
-                // If letter is selected, fetch cities starting with that letter
-                // If letter is 'all', fetch all cities for the county
+                // Fetch zip codes for the county
                 if ($letter === 'all') {
-                    $citiesResponse = Http::api()->get("counties/$countyId/place-names");
+                    // Fetch all zip codes for the county
+                    $citiesResponse = Http::api()->get("zip-codes?county_id=$countyId");
                     if ($citiesResponse->successful()) {
-                        $responseBody = json_decode($citiesResponse->body(), false);
-                        $cities = $responseBody->data ?? [];
+                        $cities = $this->getCities($citiesResponse);
                     }
                 } elseif ($letter) {
-                    $citiesResponse = Http::api()->get("counties/$countyId/place-names/" . urlencode($letter));
+                    // Fetch zip codes starting with the selected letter
+                    $citiesResponse = Http::api()->get("zip-codes?county_id=$countyId&letter=" . urlencode($letter));
                     if ($citiesResponse->successful()) {
-                        $responseBody = json_decode($citiesResponse->body(), false);
-                        $cities = $responseBody->data ?? [];
+                        $cities = $this->getCities($citiesResponse);
                     }
                 }
             }
@@ -261,7 +260,7 @@ class CityController extends Controller
                 return redirect()->route('cities.index')->with('error', 'Válassz egy megyét az exportáláshoz.');
             }
 
-            $response = Http::api()->get("counties/$countyId/place-names");
+            $response = Http::api()->get("zip-codes?county_id=$countyId");
 
             if ($response->failed()) {
                 return redirect()->route('cities.index')->with('error', 'Nem sikerült letölteni az adatokat.');
@@ -307,7 +306,7 @@ class CityController extends Controller
                 return redirect()->route('cities.index')->with('error', 'Válassz egy megyét az exportáláshoz.');
             }
 
-            $response = Http::api()->get("counties/$countyId/place-names");
+            $response = Http::api()->get("zip-codes?county_id=$countyId");
 
             if ($response->failed()) {
                 return redirect()->route('cities.index')->with('error', 'Nem sikerült letölteni az adatokat.');
