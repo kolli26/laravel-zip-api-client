@@ -49,6 +49,10 @@
                     <div>
                         <p class="text-gray-700 text-sm font-bold mb-3">{{ __('Városok kezdőbetűi') }}</p>
                         <div class="flex flex-wrap gap-2">
+                            <a href="{{ route('cities.index', ['county_id' => $selectedCounty, 'letter' => 'all']) }}" 
+                               class="px-3 py-2 rounded font-bold transition {{ $selectedLetter == 'all' ? 'bg-green-500 text-white' : 'bg-green-200 text-green-800 hover:bg-green-300' }}">
+                                {{ __('Összes') }}
+                            </a>
                             @foreach($letters as $l)
                             <a href="{{ route('cities.index', ['county_id' => $selectedCounty, 'letter' => $l]) }}" 
                                class="px-3 py-2 rounded font-bold transition {{ $selectedLetter == $l ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300' }}">
@@ -92,9 +96,9 @@
                             @foreach($cities as $city)
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->place_name ?? $city->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->county->name ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->postal_code }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $city->zip_code ?? $city->postal_code }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a href="{{ route('cities.show', $city->id) }}" class="text-blue-600 hover:text-blue-900">{{ __('Megtekintés') }}</a>
                                     @if($isAuthenticated)

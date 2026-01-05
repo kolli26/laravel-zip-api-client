@@ -21,24 +21,31 @@ class CityController extends Controller
             $counties = [];
             if ($countiesResponse->successful()) {
                 $responseBody = json_decode($countiesResponse->body(), false);
-                $counties = $responseBody->data->counties ?? [];
+                $counties = $responseBody->data ?? [];
             }
 
             // If county is selected, fetch the first letters
             $letters = [];
             if ($countyId) {
-                $lettersResponse = Http::api()->get("cities/letters?county_id=$countyId");
+                $lettersResponse = Http::api()->get("counties/$countyId/abc");
                 if ($lettersResponse->successful()) {
                     $responseBody = json_decode($lettersResponse->body(), false);
-                    $letters = $responseBody->data->letters ?? [];
+                    $letters = $responseBody->data ?? [];
                 }
 
                 // If letter is selected, fetch cities starting with that letter
-                if ($letter) {
-                    $citiesResponse = Http::api()->get("cities?county_id=$countyId&letter=" . urlencode($letter));
+                // If letter is 'all', fetch all cities for the county
+                if ($letter === 'all') {
+                    $citiesResponse = Http::api()->get("counties/$countyId/place-names");
                     if ($citiesResponse->successful()) {
                         $responseBody = json_decode($citiesResponse->body(), false);
-                        $cities = $responseBody->data->cities ?? [];
+                        $cities = $responseBody->data ?? [];
+                    }
+                } elseif ($letter) {
+                    $citiesResponse = Http::api()->get("counties/$countyId/place-names/" . urlencode($letter));
+                    if ($citiesResponse->successful()) {
+                        $responseBody = json_decode($citiesResponse->body(), false);
+                        $cities = $responseBody->data ?? [];
                     }
                 }
             }
@@ -62,7 +69,7 @@ class CityController extends Controller
     public function show($id)
     {
         try {
-            $response = Http::api()->get("/cities/$id");
+            $response = Http::api()->get("/zip-codes/$id");
 
             if ($response->failed()) {
                 $message = $response->json('message') ?? 'A város nem található vagy hiba történt.';
@@ -120,10 +127,10 @@ class CityController extends Controller
         try {
             $response = Http::api()
                 ->withToken($this->token)
-                ->post('/cities', [
+                ->post('/zip-codes', [
                     'county_id' => $request->get('county_id'),
-                    'name' => $request->get('name'),
-                    'postal_code' => $request->get('postal_code'),
+                    'place_name' => $request->get('name'),
+                    'zip_code' => $request->get('postal_code'),
                 ]);
 
             if ($response->failed()) {
@@ -151,7 +158,7 @@ class CityController extends Controller
         }
 
         try {
-            $cityResponse = Http::api()->get("/cities/$id");
+            $cityResponse = Http::api()->get("/zip-codes/$id");
             $countiesResponse = Http::api()->get('counties');
 
             if ($cityResponse->failed()) {
@@ -165,7 +172,8 @@ class CityController extends Controller
             $counties = [];
             if ($countiesResponse->successful()) {
                 $responseBody = json_decode($countiesResponse->body(), false);
-                $counties = $responseBody->data->counties ?? [];
+                $countiesData = $responseBody->data ?? null;
+                $counties = $countiesData->counties ?? [];
             }
 
             if (!$city) {
@@ -192,10 +200,10 @@ class CityController extends Controller
         try {
             $response = Http::api()
                 ->withToken($this->token)
-                ->put("/cities/$id", [
+                ->put("/zip-codes/$id", [
                     'county_id' => $request->get('county_id'),
-                    'name' => $request->get('name'),
-                    'postal_code' => $request->get('postal_code'),
+                    'place_name' => $request->get('name'),
+                    'zip_code' => $request->get('postal_code'),
                 ]);
 
             if ($response->successful()) {
@@ -225,7 +233,7 @@ class CityController extends Controller
         try {
             $response = Http::api()
                 ->withToken($this->token)
-                ->delete("/cities/$id");
+                ->delete("/zip-codes/$id");
 
             if ($response->failed()) {
                 $message = $response->json('message') ?? 'Nem sikerült törölni a várost.';
@@ -248,12 +256,12 @@ class CityController extends Controller
     public function exportCsv(Request $request)
     {
         try {
-            $url = 'cities';
-            if ($request->has('county_id')) {
-                $url .= '?county_id=' . $request->get('county_id');
+            $countyId = $request->get('county_id');
+            if (!$countyId) {
+                return redirect()->route('cities.index')->with('error', 'Válassz egy megyét az exportáláshoz.');
             }
 
-            $response = Http::api()->get($url);
+            $response = Http::api()->get("counties/$countyId/place-names");
 
             if ($response->failed()) {
                 return redirect()->route('cities.index')->with('error', 'Nem sikerült letölteni az adatokat.');
@@ -275,9 +283,9 @@ class CityController extends Controller
                 foreach ($cities as $city) {
                     fputcsv($file, [
                         $city->id, 
-                        $city->name, 
+                        $city->place_name ?? $city->name, 
                         $city->county->name ?? '', 
-                        $city->postal_code
+                        $city->zip_code ?? $city->postal_code
                     ], ';');
                 }
 
@@ -294,12 +302,12 @@ class CityController extends Controller
     public function exportPdf(Request $request)
     {
         try {
-            $url = 'cities';
-            if ($request->has('county_id')) {
-                $url .= '?county_id=' . $request->get('county_id');
+            $countyId = $request->get('county_id');
+            if (!$countyId) {
+                return redirect()->route('cities.index')->with('error', 'Válassz egy megyét az exportáláshoz.');
             }
 
-            $response = Http::api()->get($url);
+            $response = Http::api()->get("counties/$countyId/place-names");
 
             if ($response->failed()) {
                 return redirect()->route('cities.index')->with('error', 'Nem sikerült letölteni az adatokat.');
@@ -324,11 +332,7 @@ class CityController extends Controller
     {
         $responseBody = json_decode($response->body(), false);
         $data = $responseBody->data ?? null;
-        $results = [];
-
-        if (!empty($data)) {
-            $results = $data->cities ?? [];
-        }
+        $results = $data->zip_codes ?? $data ?? [];
 
         return $results;
     }
@@ -337,11 +341,7 @@ class CityController extends Controller
     {
         $responseBody = json_decode($response->body(), false);
         $data = $responseBody->data ?? null;
-        $result = [];
-
-        if (!empty($data)) {
-            $result = $data->city ?? [];
-        }
+        $result = $data->zip_code ?? $data ?? [];
 
         return $result;
     }
