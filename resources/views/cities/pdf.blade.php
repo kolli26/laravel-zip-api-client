@@ -64,9 +64,9 @@
             @foreach($entities as $city)
             <tr>
                 <td>{{ $city->id }}</td>
-                <td>{{ $city->name }}</td>
+                <td>{{ $city->place_name ?? $city->name }}</td>
                 <td>{{ $city->county->name ?? '-' }}</td>
-                <td>{{ $city->postal_code }}</td>
+                <td>{{ $city->zip_code ?? $city->postal_code }}</td>
             </tr>
             @endforeach
         </tbody>

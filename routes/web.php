@@ -10,8 +10,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $controller = new \App\Http\Controllers\Controller();
-    if (!$controller->isAuthenticated()) {
+    if (!session()->has('api_token')) {
         return redirect()->route('login');
     }
     return view('dashboard');

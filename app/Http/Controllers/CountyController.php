@@ -260,11 +260,7 @@ class CountyController extends Controller
     {
         $responseBody = json_decode($response->body(), false);
         $data = $responseBody->data ?? null;
-        $results = [];
-
-        if (!empty($data)) {
-            $results = $data->counties ?? [];
-        }
+        $results = $data ?? [];
 
         return $results;
     }
@@ -273,11 +269,7 @@ class CountyController extends Controller
     {
         $responseBody = json_decode($response->body(), false);
         $data = $responseBody->data ?? null;
-        $result = [];
-
-        if (!empty($data)) {
-            $result = $data->county ?? [];
-        }
+        $result = $data ?? [];
 
         return $result;
     }

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ $entity->name }}
+            {{ $entity->place_name ?? $entity->name }}
         </h2>
     </x-slot>
 
@@ -20,7 +20,7 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2">
                             {{ __('Város neve') }}
                         </label>
-                        <p class="text-gray-900">{{ $entity->name }}</p>
+                        <p class="text-gray-900">{{ $entity->place_name ?? $entity->name }}</p>
                     </div>
 
                     <div class="mb-4">
@@ -34,7 +34,7 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2">
                             {{ __('Irányítószám') }}
                         </label>
-                        <p class="text-gray-900">{{ $entity->postal_code }}</p>
+                        <p class="text-gray-900">{{ $entity->zip_code ?? $entity->postal_code }}</p>
                     </div>
 
                     <div class="flex gap-4">
