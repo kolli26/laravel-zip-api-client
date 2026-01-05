@@ -192,8 +192,7 @@ class CityController extends Controller
             $counties = [];
             if ($countiesResponse->successful()) {
                 $responseBody = json_decode($countiesResponse->body(), false);
-                $countiesData = $responseBody->data ?? null;
-                $counties = $countiesData->counties ?? [];
+                $counties = $responseBody->data ?? [];
             }
 
             if (!$city) {
@@ -217,27 +216,11 @@ class CityController extends Controller
             return redirect()->route('login')->with('error', 'Bejelentkezés szükséges.');
         }
 
-        try {
-            // Get county name from counties list
-            $countiesResponse = Http::api()->get('counties');
-            $counties = [];
-            if ($countiesResponse->successful()) {
-                $responseBody = json_decode($countiesResponse->body(), false);
-                $counties = $responseBody->data ?? [];
-            }
-            
-            $countyName = '';
-            foreach ($counties as $county) {
-                if ($county->id == $request->get('county_id')) {
-                    $countyName = $county->name;
-                    break;
-                }
-            }
-            
+        try {            
             $response = Http::api()
                 ->withToken($this->token)
                 ->put("/zip-codes/$id", [
-                    'county' => $countyName,
+                    'county_id' => $request->get('county_id'),
                     'place_name' => $request->get('name'),
                     'zip_code' => $request->get('postal_code'),
                 ]);

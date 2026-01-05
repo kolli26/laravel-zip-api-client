@@ -20,7 +20,7 @@
                             <select name="county_id" id="county_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('county_id') border-red-500 @enderror">
                                 <option value="">-- Válassz egy megyét --</option>
                                 @foreach($counties as $county)
-                                <option value="{{ $county->id }}" {{ old('county_id', $entity->county_id) == $county->id ? 'selected' : '' }}>
+                                <option value="{{ $county->id }}" {{ old('county_id', $entity->place_name->county->id) == $county->id ? 'selected' : '' }}>
                                     {{ $county->name }}
                                 </option>
                                 @endforeach
@@ -34,7 +34,7 @@
                             <label for="name" class="block text-gray-700 text-sm font-bold mb-2">
                                 {{ __('Város neve') }}
                             </label>
-                            <input type="text" name="name" id="name" value="{{ old('name', $entity->name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') border-red-500 @enderror">
+                            <input type="text" name="name" id="name" value="{{ old('name', $entity->place_name->name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') border-red-500 @enderror">
                             @error('name')
                             <p class="text-red-500 text-xs italic">{{ $message }}</p>
                             @enderror
@@ -44,7 +44,7 @@
                             <label for="postal_code" class="block text-gray-700 text-sm font-bold mb-2">
                                 {{ __('Irányítószám') }}
                             </label>
-                            <input type="text" name="postal_code" id="postal_code" value="{{ old('postal_code', $entity->postal_code) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('postal_code') border-red-500 @enderror">
+                            <input type="text" name="postal_code" id="postal_code" value="{{ old('postal_code', $entity->code) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('postal_code') border-red-500 @enderror">
                             @error('postal_code')
                             <p class="text-red-500 text-xs italic">{{ $message }}</p>
                             @enderror
